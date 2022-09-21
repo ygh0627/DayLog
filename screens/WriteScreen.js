@@ -1,12 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useContext, useState} from 'react';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Alert, KeyboardAvoidingView, Platform, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import WriteEditor from '../components/WriteEditor';
 import WriteHeader from '../components/WriteHeader';
@@ -17,14 +11,15 @@ function WriteScreen({route}) {
   const [title, setTitle] = useState(log?.title ?? '');
   const [body, setBody] = useState(log?.body ?? '');
   const navigation = useNavigation();
+  const [date, setDate] = useState(log ? new Date(log.date) : new Date());
 
   const {onCreate, onModify, onRemove} = useContext(LogContext);
 
   const onSave = () => {
     if (log) {
-      onModify({id: log.id, date: log.date, title, body});
+      onModify({id: log.id, date: date.toISOString(), title, body});
     } else {
-      onCreate({title, body, date: new Date().toISOString()});
+      onCreate({title, body, date: date.toISOString()});
     }
     navigation.pop();
   };
@@ -56,6 +51,8 @@ function WriteScreen({route}) {
           onSave={onSave}
           onAskRemove={onAskRemove}
           isEditing={!!log}
+          date={date}
+          setDate={setDate}
         />
         <WriteEditor
           title={title}
